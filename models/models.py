@@ -1,38 +1,32 @@
-from flask_sqlalchemy import SQLAlchemy
+from typing import Optional
+from sqlalchemy import create_engine, String, Integer, Boolean, Float, DateTime, Text, select, delete
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from datetime import datetime, timedelta, timezone
+from master import Base
 
-db = SQLAlchemy()
+class OperType(Base):
+    __tablename__ = 'op_types'
+    id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime)
 
-#definition models
-class Unit(db.Model):
-    id = db.Column(db.String(10), primary_key=True)
-    parent_id = db.Column(db.String(10), nullable=True)
-    name = db.Column(db.String(100), nullable=False)
-    unit_type = db.Column(db.Integer, nullable=True)   #0 Work Unit, 1- Work Center, 2-Area, 3-Site, 4-Enterprise
+class OperSpecificationType(Base):
+    __tablename__ = 'op_spec_type'
+    id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime)
 
-class Status(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), nullable=False)
-    use_in_process = db.Column(db.Boolean, nullable=False)
-    use_in_operation = db.Column(db.Boolean, nullable=False)
-    use_in_unit = db.Column(db.Boolean, nullable=False)
-    use_in_material = db.Column(db.Boolean, nullable=False)
-    use_in_personal = db.Column(db.Boolean, nullable=False)
+class OperSpecification(Base):
+    __tablename__ = 'op_specs'
+    id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    op_spec_type: Mapped[str] = mapped_column(String(10), nullable=False)
+    name: Mapped[str] = mapped_column(String(10), nullable=False)
+    version: Mapped[str] = mapped_column(String(10), nullable=False)
 
-class OperationType(db.Model):
-    id = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-
-class SpecificationType(db.Model):
-    id = db.Column(db.String(10), primary_key=True)
-
-class Specification(db.Model):
-    id = db.Column(db.String(10), primary_key=True)
-    specification_type = db.Column(db.String(10), nullable=False)
-    name = db.Column(db.String(10), nullable=False)
-    version = db.Column(db.String(10), nullable=False)
-
-class ProcessDef(db.Model):
-    id = db.Column(db.String(10), primary_key=True)
+class ProcessDef(Base):
+    __tablename__ = 'op_specs'
+    id: Mapped[str] = db.Column(db.String(10), primary_key=True)
     unit_id = db.Column(db.String(10), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     version = db.Column(db.String(10), nullable=True)
